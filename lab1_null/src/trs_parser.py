@@ -1,35 +1,46 @@
-# TRS BNF (если местность любая)
-# rule ::= term '=' term
-# term ::= 'x' | constructor '(' termrec term ')'
-# termrec ::= term ',' termrec | ε
-# constructor ::= [a-z]
-
-# TRS BNF (с местностью 1)
-# rule ::= term '=' term
-# term ::= 'x' | constructor '(' term ')'
-# constructor ::= [a-z]
-
+import collections
 import re
+import numpy as np
+
+EQUAL_TOKEN = '='
+VARIABLE_TOKEN = 'x'
+LEFT_PAREN_TOKEN = '('
+RIGHT_PAREN_TOKEN = ')'
+CONSTRUCTOR_TOKEN = r"[a-z]"
+
+function_aliases = {
+    'x': lambda x: x
+}
+
+rules = []
 
 
 class Rule:
     def __init__(self):
-        self.left = None
-        self.right = None
+        self.left = collections.deque()
+        self.right = collections.deque()
 
 
 class Term:
     def __init__(self):
-        self.is_x = False
-        self.arg = None
         self.constructor = ''
+        self.is_x = False
+
+
+class Polynomial:
+    def __init__(self):
+        self.expr = ''
+        self.func = 0
 
 
 class TRS_parser:
     def __init__(self, rules_list):
+        # список правил переписывания
         self.rules_list = rules_list
+        # список токенов одного правила и текущее положение в списке
         self.tokens = []
         self.token_index = 0
+        # итоговый список распаршенных правил
         self.parsed_rules = []
 
     def parse(self):
@@ -43,47 +54,58 @@ class TRS_parser:
         # print('rule')
         current_rule = Rule()
 
-        current_rule.left = self.term()
-        if self.tokens[self.token_index] == '=':
+        current_rule.left.extend(self.term())
+        if self.tokens[self.token_index] == EQUAL_TOKEN:
             self.token_index += 1
         else:
-            raise SyntaxError('В правиле rule ожидалось найти токен "=", однако найдено "' + self.tokens[self.token_index] + '"')
-        current_rule.right = self.term()
+            raise SyntaxError(
+                'В правиле rule ожидалось найти токен "=", однако найдено "'
+                + self.tokens[self.token_index] +
+                '"'
+            )
+        current_rule.right.extend(self.term())
 
         return current_rule
 
     def term(self):
         # print('term')
+        terms_list = []
         current_term = Term()
 
-        if self.tokens[self.token_index] == 'x':
+        if self.tokens[self.token_index] == VARIABLE_TOKEN:
             current_term.is_x = True
             current_term.arg = None
-            current_term.constructor = 'x'
+            current_term.constructor = VARIABLE_TOKEN
+            terms_list.append(current_term)
             self.token_index += 1
         else:
             current_term.is_x = False
             current_term.constructor = self.constructor()
 
-            if self.tokens[self.token_index] == '(':
+            if function_aliases.get(current_term.constructor) is None:
+                function_aliases[current_term.constructor] = None
+
+            terms_list.append(current_term)
+
+            if self.tokens[self.token_index] == LEFT_PAREN_TOKEN:
                 self.token_index += 1
             else:
                 raise SyntaxError('В правиле term ожидалось найти токен "(", однако найдено "' + self.tokens[self.token_index] + '"')
 
-            current_term.arg = self.term()
+            terms_list.extend(self.term())
 
-            if self.tokens[self.token_index] == ')':
+            if self.tokens[self.token_index] == RIGHT_PAREN_TOKEN:
                 self.token_index += 1
             else:
                 raise SyntaxError('В правиле term ожидалось найти токен ")", однако найдено "' + self.tokens[self.token_index] + '"')
 
-        return current_term
+        return terms_list
 
     def constructor(self):
         # print('constructor')
         # print('index = ' + str(self.index))
         # print('token = ' + str(self.tokens[self.index]))
-        if re.match(r"[a-z]", self.tokens[self.token_index]):
+        if re.match(CONSTRUCTOR_TOKEN, self.tokens[self.token_index]):
             self.token_index += 1
         else:
             raise SyntaxError('В правиле constructor ожидалось найти токен "[a-z]", однако найдено "' + self.tokens[self.token_index] + '"')
@@ -94,31 +116,29 @@ def delete_spaces(input_string):
     return input_string.replace(' ', '').replace('\n', '').replace('\t', '').replace('\r', '')
 
 
-print('f(g(x)) = x')
-print()
-
 parser = TRS_parser(['f(g(x)) = x', 'x = x'])
 parser.parse()
+rules = parser.parsed_rules
+
+print()
+print(function_aliases)
+print(rules)
+print()
 
 for rule in parser.parsed_rules:
     print('LEFT:')
     left = rule.left
-    tmp = left
     id = 1
-    while tmp is not None:
-        print(str(id) + ': ' + tmp.constructor)
-        tmp = tmp.arg
-        id += 1
+    for term in left:
+        print(str(id) + ': ' + term.constructor)
     print()
 
     print('RIGHT')
     right = rule.right
-    tmp = right
     id = 1
-    while tmp is not None:
-        print(str(id) + ': ' + tmp.constructor)
-        tmp = tmp.arg
-        id += 1
+    for term in right:
+        print(str(id) + ': ' + term.constructor)
 
     print()
+    print('---')
     print()
