@@ -16,12 +16,14 @@ class PolynomialParser:
         self.parsed_polynomials = []
 
     def parse(self):
+        print('parse')
         for polynomial in self.polynomials_list:
             self.tokens = list(delete_spaces(polynomial))
             self.token_index = 0
-            self.parsed_polynomials.append(self.interpretation)
+            self.parsed_polynomials.append(self.interpretation())
 
     def interpretation(self):
+        print('interpr')
         current_polynomial = Polynomial()
         polynomial_constructor = self.constructor()
 
@@ -45,7 +47,10 @@ class PolynomialParser:
         current_polynomial.expr = self.polynomial()
         function_aliases[polynomial_constructor] = current_polynomial
 
+        return current_polynomial
+
     def constructor(self):
+        print('const')
         if re.match(CONSTRUCTOR_TOKEN, self.tokens[self.token_index]):
             self.token_index += 1
         else:
@@ -57,6 +62,7 @@ class PolynomialParser:
         return self.tokens[self.token_index - 1]
 
     def polynomial(self):
+        print('poly')
         monomial_list = [self.monomial()]
 
         if self.tokens[self.token_index] == '+' or self.tokens[self.token_index] == '-':
@@ -69,6 +75,7 @@ class PolynomialParser:
         return monomial_list
 
     def monomial(self):
+        print('mono')
         current_monomial = ''
 
         if self.tokens[self.token_index] == '-':
@@ -112,10 +119,13 @@ class PolynomialParser:
                 '"'
             )
 
+        return current_monomial
+
     def is_number_token(self):
         return re.match(r"[1-9]", self.tokens[self.token_index])
 
     def number(self):
+        print('number')
         current_number = ''
 
         if re.match(r"[1-9]", self.tokens[self.token_index]):

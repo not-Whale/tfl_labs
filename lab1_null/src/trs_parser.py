@@ -108,31 +108,3 @@ class TRSParser:
 
 def delete_spaces(input_string):
     return input_string.replace(' ', '').replace('\n', '').replace('\t', '').replace('\r', '')
-
-
-parser = TRSParser(['f(g(x)) = x', 'x = x'])
-parser.parse()
-rules = parser.parsed_rules
-
-print()
-print(function_aliases)
-print(rules)
-print()
-
-for rule in parser.parsed_rules:
-    print('LEFT:')
-    left = rule.left
-    id = 1
-    for term in left:
-        print(str(id) + ': ' + term.constructor)
-    print()
-
-    print('RIGHT')
-    right = rule.right
-    id = 1
-    for term in right:
-        print(str(id) + ': ' + term.constructor)
-
-    print()
-    print('---')
-    print()
