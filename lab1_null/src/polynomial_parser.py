@@ -83,13 +83,13 @@ class PolynomialParser:
         # print('mono')
         current_monomial = ''
 
-        if self.tokens[self.token_index] == '-':
+        if self.token_index < len(self.tokens) and self.tokens[self.token_index] == '-':
             current_monomial += '-'
             self.token_index += 1
             current_monomial += self.monomial()
         elif self.is_number_token():
             current_monomial += self.number()
-            if self.tokens[self.token_index] == '*':
+            if self.token_index < len(self.tokens) and self.tokens[self.token_index] == '*':
                 current_monomial += '*'
                 self.token_index += 1
                 current_monomial += self.monomial()
@@ -113,10 +113,10 @@ class PolynomialParser:
                     self.tokens[self.token_index] +
                     '"'
                 )
-        elif self.tokens[self.token_index] == 'x':
+        elif self.token_index < len(self.tokens) and self.tokens[self.token_index] == 'x':
             current_monomial += 'x'
             self.token_index += 1
-            if self.tokens[self.token_index] == '^':
+            if self.token_index < len(self.tokens) and self.tokens[self.token_index] == '^':
                 current_monomial += '^'
                 self.token_index += 1
                 current_monomial += self.number()
