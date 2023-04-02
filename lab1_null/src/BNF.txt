@@ -1,0 +1,10 @@
+# TRS BNF (если местность любая)
+# rule ::= term '=' term
+# term ::= 'x' | constructor '(' termrec term ')'
+# termrec ::= term ',' termrec | ε
+# constructor ::= [a-z]
+
+# TRS BNF (с местностью 1)
+# rule ::= term '=' term
+# term ::= 'x' | constructor '(' term ')'
+# constructor ::= [a-z]
