@@ -1,10 +1,21 @@
 # TRS BNF (если местность любая)
+#
 # rule ::= term '=' term
 # term ::= 'x' | constructor '(' termrec term ')'
 # termrec ::= term ',' termrec | ε
 # constructor ::= [a-z]
 
+
 # TRS BNF (с местностью 1)
+#
 # rule ::= term '=' term
 # term ::= 'x' | constructor '(' term ')'
 # constructor ::= [a-z]
+
+# Полиномиальное разложение
+#
+# interpretation ::= constructor '->' polynomial
+# polynomial ::= monomial | monomial '+' polynomial | monomial '-' polynomial
+# monomial ::= '-'? (number '*')? 'x' ('^' number)?
+# monomial ::= 'x' | 'x' '^' number | number '*' 'x' | number '*' 'x' '^' number | '-' 'x' | '-' 'x' '^' number | '-' number '*' 'x' | '-' number '*' 'x' '^' number
+# number ::= [1-9][0-9]*
