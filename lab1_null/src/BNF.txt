@@ -15,6 +15,7 @@
 # Полиномиальное разложение
 #
 # interpretation ::= constructor '->' polynomial
+# polynomial ::= monomial | monomial (+ | -) polymonial
 # polynomial ::= monomial | monomial '+' polynomial | monomial '-' polynomial
 # monomial ::= '-'? (number '*')? 'x' ('^' number)?
 # monomial ::= 'x' | 'x' '^' number | number '*' 'x' | number '*' 'x' '^' number | '-' 'x' | '-' 'x' '^' number | '-' number '*' 'x' | '-' number '*' 'x' '^' number
