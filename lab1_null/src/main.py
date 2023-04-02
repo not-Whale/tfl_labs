@@ -32,6 +32,8 @@ for rule in parser.parsed_rules:
 parser2 = PolynomialParser(['g -> 32*x^10 - x + -12*x + x^2'])
 parser2.parse()
 p = parser2.parsed_polynomials
-print(p[0].expr)
+print(p)
 
 print(function_aliases)
+print(function_aliases['g'])
+print(function_aliases['g'].expr)

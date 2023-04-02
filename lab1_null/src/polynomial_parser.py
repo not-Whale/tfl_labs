@@ -44,10 +44,15 @@ class PolynomialParser:
                 '"'
             )
 
-        current_polynomial.expr = self.polynomial()
+        monomial_list = self.polynomial()
+        polynomial = ''
+        for monomial in monomial_list:
+            polynomial += monomial
+
+        current_polynomial.expr = delete_double_signs(polynomial)
         function_aliases[polynomial_constructor] = current_polynomial
 
-        return current_polynomial
+        return polynomial
 
     def constructor(self):
         # print('const')
@@ -65,7 +70,7 @@ class PolynomialParser:
         # print('poly')
         monomial_list = [self.monomial()]
 
-        if self.tokens[self.token_index] == '+' or self.tokens[self.token_index] == '-':
+        if self.token_index < len(self.tokens) and (self.tokens[self.token_index] == '+' or self.tokens[self.token_index] == '-'):
             tmp_token = self.tokens[self.token_index]
             self.token_index += 1
             next_monomial_list = self.polynomial()
@@ -81,24 +86,27 @@ class PolynomialParser:
         if self.tokens[self.token_index] == '-':
             current_monomial += '-'
             self.token_index += 1
+            current_monomial += self.monomial()
         elif self.is_number_token():
             current_monomial += self.number()
             if self.tokens[self.token_index] == '*':
                 current_monomial += '*'
                 self.token_index += 1
-                if self.tokens[self.token_index] == 'x':
-                    current_monomial += 'x'
-                    self.token_index += 1
-                    if self.tokens[self.token_index] == '^':
-                        current_monomial += '^'
-                        self.token_index += 1
-                        current_monomial += self.number()
-                else:
-                    raise SyntaxError(
-                        'В правиле monomial ожидалось найти токен "x", однако найдено "' +
-                        self.tokens[self.token_index] +
-                        '"'
-                    )
+                current_monomial += self.monomial()
+
+                # if self.tokens[self.token_index] == 'x':
+                #     current_monomial += 'x'
+                #     self.token_index += 1
+                #     if self.tokens[self.token_index] == '^':
+                #         current_monomial += '^'
+                #         self.token_index += 1
+                #         current_monomial += self.number()
+                # else:
+                #     raise SyntaxError(
+                #         'В правиле monomial ожидалось найти токен "x", однако найдено "' +
+                #         self.tokens[self.token_index] +
+                #         '"'
+                #     )
             else:
                 raise SyntaxError(
                     'В правиле monomial ожидалось найти токен "*", однако найдено "' +
@@ -119,6 +127,7 @@ class PolynomialParser:
                 '"'
             )
 
+        # print(current_monomial)
         return current_monomial
 
     def is_number_token(self):
@@ -132,15 +141,19 @@ class PolynomialParser:
             current_number += self.tokens[self.token_index]
             self.token_index += 1
 
-            while re.match(r"[0-9]", self.tokens[self.token_index]):
+            while self.token_index < len(self.tokens) and re.match(r"[0-9]", self.tokens[self.token_index]):
                 current_number += self.tokens[self.token_index]
                 self.token_index += 1
 
         else:
             raise SyntaxError(
-                'В правиле number ожидалось найти токен "[1-9]" или "[1-9][0-9]*" или "x", однако найдено "' +
+                'В правиле number ожидалось найти токен "[1-9][0-9]*", однако найдено "' +
                 self.tokens[self.token_index] +
                 '"'
             )
 
         return current_number
+
+
+def delete_double_signs(input_string):
+    return input_string.replace('+-', '-')
