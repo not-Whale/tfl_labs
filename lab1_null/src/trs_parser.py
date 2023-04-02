@@ -27,13 +27,7 @@ class Term:
         self.is_x = False
 
 
-class Polynomial:
-    def __init__(self):
-        self.expr = ''
-        self.func = 0
-
-
-class TRS_parser:
+class TRSParser:
     def __init__(self, rules_list):
         # список правил переписывания
         self.rules_list = rules_list
@@ -116,7 +110,7 @@ def delete_spaces(input_string):
     return input_string.replace(' ', '').replace('\n', '').replace('\t', '').replace('\r', '')
 
 
-parser = TRS_parser(['f(g(x)) = x', 'x = x'])
+parser = TRSParser(['f(g(x)) = x', 'x = x'])
 parser.parse()
 rules = parser.parsed_rules
 
