@@ -1,3 +1,5 @@
+import functools
+
 from trs_parser import delete_spaces, function_aliases, CONSTRUCTOR_TOKEN
 import re
 
@@ -23,7 +25,7 @@ class PolynomialParser:
             self.parsed_polynomials.append(self.interpretation())
 
     def interpretation(self):
-        # print('interpr')
+        # print('interpretation')
         current_polynomial = Polynomial()
         polynomial_constructor = self.constructor()
 
@@ -45,6 +47,8 @@ class PolynomialParser:
             )
 
         monomial_list = self.polynomial()
+        monomial_list.sort(key=functools.cmp_to_key(compare_monomials))
+
         polynomial = ''
         for monomial in monomial_list:
             polynomial += monomial
@@ -55,7 +59,7 @@ class PolynomialParser:
         return polynomial
 
     def constructor(self):
-        # print('const')
+        # print('constructor')
         if re.match(CONSTRUCTOR_TOKEN, self.tokens[self.token_index]):
             self.token_index += 1
         else:
@@ -67,10 +71,11 @@ class PolynomialParser:
         return self.tokens[self.token_index - 1]
 
     def polynomial(self):
-        # print('poly')
+        # print('polynomial')
         monomial_list = [self.monomial()]
 
-        if self.token_index < len(self.tokens) and (self.tokens[self.token_index] == '+' or self.tokens[self.token_index] == '-'):
+        if self.token_index < len(self.tokens) and \
+                (self.tokens[self.token_index] == '+' or self.tokens[self.token_index] == '-'):
             tmp_token = self.tokens[self.token_index]
             self.token_index += 1
             next_monomial_list = self.polynomial()
@@ -80,7 +85,7 @@ class PolynomialParser:
         return monomial_list
 
     def monomial(self):
-        # print('mono')
+        # print('monomial')
         current_monomial = ''
 
         if self.token_index < len(self.tokens) and self.tokens[self.token_index] == '-':
@@ -93,20 +98,6 @@ class PolynomialParser:
                 current_monomial += '*'
                 self.token_index += 1
                 current_monomial += self.monomial()
-
-                # if self.tokens[self.token_index] == 'x':
-                #     current_monomial += 'x'
-                #     self.token_index += 1
-                #     if self.tokens[self.token_index] == '^':
-                #         current_monomial += '^'
-                #         self.token_index += 1
-                #         current_monomial += self.number()
-                # else:
-                #     raise SyntaxError(
-                #         'В правиле monomial ожидалось найти токен "x", однако найдено "' +
-                #         self.tokens[self.token_index] +
-                #         '"'
-                #     )
             else:
                 raise SyntaxError(
                     'В правиле monomial ожидалось найти токен "*", однако найдено "' +
@@ -120,6 +111,8 @@ class PolynomialParser:
                 current_monomial += '^'
                 self.token_index += 1
                 current_monomial += self.number()
+            else:
+                current_monomial += '^1'
         else:
             raise SyntaxError(
                 'В правиле monomial ожидалось найти токен "-" или "[1-9][0-9]*" или "x", однако найдено "' +
@@ -157,3 +150,7 @@ class PolynomialParser:
 
 def delete_double_signs(input_string):
     return input_string.replace('+-', '-')
+
+
+def compare_monomials(m1, m2):
+    return int(m2.split('^')[1]) - int(m1.split('^')[1])

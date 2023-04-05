@@ -1,6 +1,5 @@
 import collections
 import re
-import numpy as np
 
 EQUAL_TOKEN = '='
 VARIABLE_TOKEN = 'x'
@@ -9,10 +8,9 @@ RIGHT_PAREN_TOKEN = ')'
 CONSTRUCTOR_TOKEN = r"[a-z]"
 
 function_aliases = {
-    'x': lambda x: x
+    'x': lambda x: x,
+    'x^1': lambda x: x,
 }
-
-rules = []
 
 
 class Rule:
@@ -84,25 +82,35 @@ class TRSParser:
             if self.tokens[self.token_index] == LEFT_PAREN_TOKEN:
                 self.token_index += 1
             else:
-                raise SyntaxError('В правиле term ожидалось найти токен "(", однако найдено "' + self.tokens[self.token_index] + '"')
+                raise SyntaxError(
+                    'В правиле term ожидалось найти токен "(", однако найдено "' +
+                    self.tokens[self.token_index] +
+                    '"'
+                )
 
             terms_list.extend(self.term())
 
             if self.tokens[self.token_index] == RIGHT_PAREN_TOKEN:
                 self.token_index += 1
             else:
-                raise SyntaxError('В правиле term ожидалось найти токен ")", однако найдено "' + self.tokens[self.token_index] + '"')
+                raise SyntaxError(
+                    'В правиле term ожидалось найти токен ")", однако найдено "' +
+                    self.tokens[self.token_index] +
+                    '"'
+                )
 
         return terms_list
 
     def constructor(self):
         # print('constructor')
-        # print('index = ' + str(self.index))
-        # print('token = ' + str(self.tokens[self.index]))
         if re.match(CONSTRUCTOR_TOKEN, self.tokens[self.token_index]):
             self.token_index += 1
         else:
-            raise SyntaxError('В правиле constructor ожидалось найти токен "[a-z]", однако найдено "' + self.tokens[self.token_index] + '"')
+            raise SyntaxError(
+                'В правиле constructor ожидалось найти токен "[a-z]", однако найдено "' +
+                self.tokens[self.token_index] +
+                '"'
+            )
         return self.tokens[self.token_index - 1]
 
 
