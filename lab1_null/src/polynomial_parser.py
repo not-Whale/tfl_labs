@@ -56,7 +56,7 @@ class PolynomialParser:
         current_polynomial.expr = delete_double_signs(polynomial)
         function_aliases[polynomial_constructor] = current_polynomial
 
-        return polynomial
+        return monomial_list
 
     def constructor(self):
         # print('constructor')
