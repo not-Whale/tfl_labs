@@ -1,49 +1,55 @@
 from trs_parser import *
 from polynomial_parser import *
-from string_to_struct import *
 
-parser = TRSParser(['f(g(x)) = x', 'x = x'])
-parser.parse()
-rules = parser.parsed_rules
+trs_parser = TRSParser(['f(g(x)) = x', 'h(x) = x'])
+trs_parser.parse()
+rules = trs_parser.get_rules()
+function_aliases = trs_parser.get_function_aliases()
 
 print()
 print(function_aliases)
 print()
 
-for rule in parser.parsed_rules:
+for rule in rules:
     print('LEFT:')
-    left = rule.left
     id = 1
-    for term in left:
-        print(str(id) + ': ' + term.constructor)
+    for term in rule.left:
+        print(str(id) + ': ' + str(term))
+        id += 1
     print()
 
     print('RIGHT')
-    right = rule.right
     id = 1
-    for term in right:
-        print(str(id) + ': ' + term.constructor)
+    for term in rule.right:
+        print(str(id) + ': ' + str(term))
+        id += 1
 
     print()
     print('---')
     print()
 
 
-parser2 = PolynomialParser(['g -> 32*x^10 - x + -12*x + x^2', 'f -> x'])
-parser2.parse()
-p = parser2.parsed_polynomials
-print(p)
+aliases_parser = AliasesParser(['g -> 32*x^10 - x + -12*x + x^2', 'f -> x'], function_aliases)
+aliases_parser.parse()
+function_aliases = aliases_parser.get_function_aliases()
+p = aliases_parser.get_polynomials()
 
-# print(function_aliases)
-# print(function_aliases['g'])
-# print(function_aliases['g'].expr)
-# print(function_aliases['f'].expr)
-
-parser3 = PolynomialStringParser(p)
-parser3.parse()
-
-for poly in parser3.polynomial_list:
+print()
+for poly in p:
     print('[')
     for mono in poly:
-        print(str(mono.k) + '*x^' + str(mono.power))
+        print(mono)
     print(']')
+
+print()
+# print(p)
+
+x = Monomial()
+x.expr = '1*x^1'
+x.calculate_parameters()
+x_p = Polynomial()
+x_p.monomial_list = [x]
+function_aliases['x'] = x_p
+
+for k, v in function_aliases.items():
+    print(k + ': ' + str(v))

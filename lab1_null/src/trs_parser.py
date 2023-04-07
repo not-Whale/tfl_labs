@@ -1,16 +1,6 @@
 import collections
 import re
-
-EQUAL_TOKEN = '='
-VARIABLE_TOKEN = 'x'
-LEFT_PAREN_TOKEN = '('
-RIGHT_PAREN_TOKEN = ')'
-CONSTRUCTOR_TOKEN = r"[a-z]"
-
-function_aliases = {
-    'x': lambda x: x,
-    'x^1': lambda x: x,
-}
+from consts import *
 
 
 class Rule:
@@ -18,15 +8,32 @@ class Rule:
         self.left = collections.deque()
         self.right = collections.deque()
 
+    def get_left_part(self):
+        return self.left
+
+    def get_right_part(self):
+        return self.right
+
 
 class Term:
     def __init__(self):
         self.constructor = ''
         self.is_x = False
 
+    def is_x(self):
+        return self.is_x
+
+    def get_constructor_string(self):
+        return self.constructor
+
+    def __str__(self):
+        return self.constructor
+
 
 class TRSParser:
     def __init__(self, rules_list):
+        # список оценок функций
+        self.function_aliases = {}
         # список правил переписывания
         self.rules_list = rules_list
         # список токенов одного правила и текущее положение в списке
@@ -34,6 +41,12 @@ class TRSParser:
         self.token_index = 0
         # итоговый список распаршенных правил
         self.parsed_rules = []
+
+    def get_rules(self):
+        return self.parsed_rules
+
+    def get_function_aliases(self):
+        return self.function_aliases
 
     def parse(self):
         # print('parse')
@@ -74,8 +87,8 @@ class TRSParser:
             current_term.is_x = False
             current_term.constructor = self.constructor()
 
-            if function_aliases.get(current_term.constructor) is None:
-                function_aliases[current_term.constructor] = None
+            if self.function_aliases.get(current_term.constructor) is None:
+                self.function_aliases[current_term.constructor] = None
 
             terms_list.append(current_term)
 
