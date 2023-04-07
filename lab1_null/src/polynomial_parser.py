@@ -29,7 +29,6 @@ class Monomial:
 
     def calculate_parameters(self):
         self.expr = delete_double_signs(self.expr)
-        # print('calc params expr = ' + self.expr)
 
         if MULTIPLY_TOKEN in self.expr:
             self.k = int(self.expr.split(MULTIPLY_TOKEN)[0])
@@ -40,9 +39,6 @@ class Monomial:
 
         if POWER_TOKEN in self.expr:
             self.power = int(self.expr.split(POWER_TOKEN)[1])
-
-        # print('calc params k = ' + str(self.k))
-        # print('calc params power = ' + str(self.power))
 
     def __str__(self):
         return str(self.k) + '*x^' + str(self.power)
@@ -61,9 +57,11 @@ class AliasesParser:
         self.parsed_polynomials = []
 
     def get_polynomials(self):
+        # [Monomial()]
         return self.parsed_polynomials
 
     def get_function_aliases(self):
+        # {string: [Monomial()]}
         return self.function_aliases
 
     def parse(self):
@@ -102,6 +100,7 @@ class AliasesParser:
         current_polynomial.monomial_list = monomial_list
         self.function_aliases[polynomial_constructor] = current_polynomial
 
+        # [Monomial()]
         return monomial_list
 
     def constructor(self):
@@ -136,7 +135,6 @@ class AliasesParser:
             monomial_list.extend(next_monomial_list)
 
         # [Monomial()]
-        # print(monomial_list)
         return monomial_list
 
     def monomial(self):
@@ -217,10 +215,8 @@ def calculate_reps(polynomial):
                     polynomial[i].expr = str(polynomial[i].k) + '*x' + str(polynomial[i].power)
                 else:
                     polynomial.pop(i)
-                    print('pop i = ' + str(i))
                     stop -= 1
                 polynomial.pop(j)
-                print('pop j = ' + str(j))
                 stop -= 1
             else:
                 break
