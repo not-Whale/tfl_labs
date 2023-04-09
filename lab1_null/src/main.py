@@ -80,11 +80,13 @@ def get_rule_side_string(rule_side):
     return result
 
 
-reader = Reader('./static/trs.txt', './static/poly.txt')
+trs_file_path = input('Введите путь до файла с TRS:')
+polynomial_file_path = input('Введите путь до файла с полиномиальной оценкой:')
+reader = Reader(trs_file_path, polynomial_file_path)
 reader.parse()
 
-print(reader.get_trs())
-print(reader.get_polynomial())
+# print(reader.get_trs())
+# print(reader.get_polynomial())
 
 trs_parser = TRSParser(reader.get_trs())
 trs_parser.parse()

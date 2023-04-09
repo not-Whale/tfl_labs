@@ -1,5 +1,5 @@
 class Reader:
-    def __init__(self, trs, polynomial):
+    def __init__(self, trs='./static/trs.txt', polynomial='./static/poly.txt'):
         self.trs_file_path = trs
         self.polynomial_file_path = polynomial
         self.trs_list = []
