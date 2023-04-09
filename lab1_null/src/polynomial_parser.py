@@ -12,6 +12,16 @@ class Polynomial:
     def get_function(self):
         return self.func
 
+    def to_power_list(self):
+        monomial_list = self.monomial_list[::-1]
+        last_power = monomial_list[len(monomial_list) - 1].power
+        power_list = [0 for i in range(last_power + 1)]
+
+        for monomial in monomial_list:
+            power_list[monomial.power] = monomial.k
+
+        return power_list
+
     def __str__(self):
         res = '['
         for mono in self.monomial_list:
