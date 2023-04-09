@@ -15,7 +15,7 @@ class Polynomial:
     def to_power_list(self):
         monomial_list = self.monomial_list[::-1]
         last_power = monomial_list[len(monomial_list) - 1].power
-        power_list = [0 for i in range(last_power + 1)]
+        power_list = [0 for _ in range(last_power + 1)]
 
         for monomial in monomial_list:
             power_list[monomial.power] = monomial.k

@@ -9,7 +9,6 @@ def create_function_aliases_power_list(aliases):
     power_lists = {}
 
     for k, v in aliases.items():
-        # print(k + ': ' + str(v))
         if v is not None:
             power_lists[k] = v.to_power_list()
 
@@ -45,7 +44,6 @@ def function_compose(composition_list, function_aliases_power_lists):
 
 
 def is_compose_positive(compose):
-    answer = False
     i = len(compose) - 1
     while i >= 0 and compose[i] == 0:
         i -= 1
@@ -53,15 +51,14 @@ def is_compose_positive(compose):
     if i >= 0 and compose[i] > 0:
         return True
 
-    return answer
+    return False
 
 
 def print_rule(rule):
     left_deq = rule.left
     right_deq = rule.right
 
-    result = ''
-    result += get_rule_side_string(left_deq)
+    result = get_rule_side_string(left_deq)
     result += ' = '
     result += get_rule_side_string(right_deq)
 
@@ -80,58 +77,41 @@ def get_rule_side_string(rule_side):
     return result
 
 
+# читаем пути
 trs_file_path = input('Введите путь до файла с TRS:')
 polynomial_file_path = input('Введите путь до файла с полиномиальной оценкой:')
-reader = Reader(trs_file_path, polynomial_file_path)
+
+# парсим входные данные
+if trs_file_path != '' and polynomial_file_path != '':
+    reader = Reader(trs_file_path, polynomial_file_path)
+else:
+    reader = Reader()
 reader.parse()
 
-# print(reader.get_trs())
-# print(reader.get_polynomial())
-
+# парсим TRS
 trs_parser = TRSParser(reader.get_trs())
 trs_parser.parse()
+# генерируем список правил переписывания и словарь для связи оценок и конструкторов
 rules = trs_parser.get_rules()
 function_aliases = trs_parser.get_function_aliases()
 
-# print()
-# print(function_aliases)
-# print()
-#
-# for rule in rules:
-#     print('LEFT:')
-#     id = 1
-#     for term in rule.left:
-#         print(str(id) + ': ' + str(term))
-#         id += 1
-#     print()
-#
-#     print('RIGHT')
-#     id = 1
-#     for term in rule.right:
-#         print(str(id) + ': ' + str(term))
-#         id += 1
-#
-#     print()
-#     print('---')
-#     print()
-
-
+# парсим полиномиальные оценки
 aliases_parser = AliasesParser(reader.get_polynomial(), function_aliases)
 aliases_parser.parse()
 function_aliases = aliases_parser.get_function_aliases()
-p = aliases_parser.get_polynomials()
 
+# создаем вырожденную оценку { 'x': Monomial('1*x^1) } и добавляем в словарь
 x = Monomial()
-x.expr = '1*x^1'
+x.expr = VARIABLE_ALIAS
 x.calculate_parameters()
 x_p = Polynomial()
 x_p.monomial_list = [x]
-function_aliases['x'] = x_p
+function_aliases[VARIABLE_TOKEN] = x_p
 
+# переводим словарь оценок к виду, читаемому numpy
 function_aliases_power_lists = create_function_aliases_power_list(function_aliases)
-# print(function_aliases_power_lists)
-# print()
 
+# проверяем систему переписывания термов на завершаемость
 is_ok = True
 for rule in rules:
     # выделяем левую и правую часть выражения
@@ -140,11 +120,9 @@ for rule in rules:
 
     # считаем композицию левой части
     left_side_compose = function_compose(left_side, function_aliases_power_lists)
-    # print(left_side_compose)
 
     # считаем композицию правой части
     right_side_compose = function_compose(right_side, function_aliases_power_lists)
-    # print(right_side_compose)
 
     # считаем разность оценок слева и справа
     result_compose = left_side_compose.copy()
@@ -155,10 +133,7 @@ for rule in rules:
         else:
             result_compose[i] -= right_side_compose[i]
 
-    # print(result_compose)
-
     answer = is_compose_positive(result_compose)
-    # print(answer)
 
     if not answer:
         print('Убывание нарушается на правиле переписывания:')
