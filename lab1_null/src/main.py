@@ -1,5 +1,6 @@
 from trs_parser import *
 from polynomial_parser import *
+from reader import *
 
 from numpy.polynomial import polynomial as P
 
@@ -79,7 +80,13 @@ def get_rule_side_string(rule_side):
     return result
 
 
-trs_parser = TRSParser(['f(g(h(x))) = k(x)', 'k(x) = x'])
+reader = Reader('./static/trs.txt', './static/poly.txt')
+reader.parse()
+
+print(reader.get_trs())
+print(reader.get_polynomial())
+
+trs_parser = TRSParser(reader.get_trs())
 trs_parser.parse()
 rules = trs_parser.get_rules()
 function_aliases = trs_parser.get_function_aliases()
@@ -107,7 +114,7 @@ function_aliases = trs_parser.get_function_aliases()
 #     print()
 
 
-aliases_parser = AliasesParser(['g -> x^3', 'f -> x^2', 'h -> x^4', 'k -> x^10'], function_aliases)
+aliases_parser = AliasesParser(reader.get_polynomial(), function_aliases)
 aliases_parser.parse()
 function_aliases = aliases_parser.get_function_aliases()
 p = aliases_parser.get_polynomials()
