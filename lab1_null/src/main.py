@@ -4,15 +4,15 @@ from polynomial_parser import *
 from numpy.polynomial import polynomial as P
 
 
-def create_function_aliases_power_list(function_aliases):
-    function_aliases_power_lists = {}
+def create_function_aliases_power_list(aliases):
+    power_lists = {}
 
-    for k, v in function_aliases.items():
+    for k, v in aliases.items():
         # print(k + ': ' + str(v))
         if v is not None:
-            function_aliases_power_lists[k] = v.to_power_list()
+            power_lists[k] = v.to_power_list()
 
-    return function_aliases_power_lists
+    return power_lists
 
 
 def function_compose(composition_list, function_aliases_power_lists):
