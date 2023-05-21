@@ -133,3 +133,6 @@ dmypy.json
 
 # dart files
 .dart_tool
+
+# lab2 (временно)
+lab2/
