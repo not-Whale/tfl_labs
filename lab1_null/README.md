@@ -1,4 +1,4 @@
-# lab1_null
+## Лабораторная работа 1 (обнуление)
 ### Задача
 Реализовать проверку пользовательской оценки TRS в полиномах.
 
@@ -20,3 +20,30 @@
 2. Перевод полинома из строкового представления в набор функций (решение: поиск соотвествующих парсеров и грамматик разбора полиномов, после чего рукописное сопоставление и доработка).
 3. Сравнение двух полиномов на бесконечности (решение: погуглить и ввести необходимый уровень приближения и абстракции).
 4. Нагруженность алгоритма "в лоб" (решение: ???).
+
+### Синтаксис входных данных
+TRS BNF если местность любая:
+```
+rule ::= term '=' term
+term ::= 'x' | constructor '(' termrec term ')'
+termrec ::= term ',' termrec | ε
+constructor ::= [a-z]
+```
+
+TRS BNF с конструкторами местности 1:
+```
+rule ::= term '=' term
+term ::= 'x' | constructor '(' term ')'
+constructor ::= [a-z]
+```
+
+Полиномиальная оценка:
+```
+interpretation ::= constructor '->' polynomial
+polynomial ::= monomial | monomial (+ | -) polymonial
+polynomial ::= monomial | monomial '+' polynomial | monomial '-' polynomial
+monomial ::= '-'? (number '*')? 'x' ('^' number)?
+# введем условность, что x == x^1 для удобства вычислений
+monomial ::= 'x' | 'x' '^' number | number '*' 'x' | number '*' 'x' '^' number | '-' 'x' | '-' 'x' '^' number | '-' number '*' 'x' | '-' number '*' 'x' '^' number
+number ::= [1-9][0-9]*
+```
